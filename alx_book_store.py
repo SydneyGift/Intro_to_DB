@@ -1,7 +1,7 @@
 #A MySQL database for an online bookstore
 import mysql.connector
 
-#Creating the database alx bok store
+#Creating the database alx book store
 alx_book_store = mysql.connector.connect(
     host = "localhost",
     user = "Syd",
