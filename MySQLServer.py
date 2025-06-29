@@ -1,61 +1,70 @@
-#A MySQL database for an online bookstore
+# A MySQL database for an online bookstore
 import mysql.connector
 
-#Creating the database alx book store
-alx_book_store = mysql.connector.connect(
-    host = "localhost",
-    user = "Syd",
-    password = "Pass",
-    database = "alx_book_store"
+# Connect to MySQL server
+mydb = mysql.connector.connect(
+    host="localhost",
+    user="Syd",
+    password="Pass"
 )
 
-mycursor = alx_book_store.cursor()
+mycursor = mydb.cursor()
+#In case the db does not exist, create it
+mycursor.execute("CREATE DATABASE IF NOT EXISTS alx_book_store")
 
-#Creating the table, books, to store info about books available in the bookstore.
+# Select the database
+mycursor.execute("USE alx_book_store")
 
+# Creating the table, Authors, to store author info
 mycursor.execute("""
-CREATE TABLE Books(
-    book_id PRIMARY KEY,
-    title VARCHAR(130)
-    FOREIGN KEY (author_id) REFERENCES Authors(author_id)
-    price DOUBLE
-    publication_date DATE
-)
-                 """)
-
-#Creating the table, Authors, to store author info.
-mycursor.execute("""
-CREATE TABLE Authors(
-    author_id PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS Authors (
+    author_id INT PRIMARY KEY,
     author_name VARCHAR(215)
 )
-                 """)
+""")
 
-#Creating the table, Customers, to store customer info.
+# Creating the table, Books, to store info about books
 mycursor.execute("""
-CREATE TABLE Customers(
-    customer_id PRIMARY KEY,
-    customer_name VARCHAR(215)
-    email VARCHAR(215)
+CREATE TABLE IF NOT EXISTS Books (
+    book_id INT PRIMARY KEY,
+    title VARCHAR(130),
+    author_id INT,
+    price DOUBLE,
+    publication_date DATE,
+    FOREIGN KEY (author_id) REFERENCES Authors(author_id)
+)
+""")
+
+# Creating the table, Customers, to store customer info
+mycursor.execute("""
+CREATE TABLE IF NOT EXISTS Customers (
+    customer_id INT PRIMARY KEY,
+    customer_name VARCHAR(215),
+    email VARCHAR(215),
     address TEXT
 )
-                 """)
+""")
 
-#Creating the table, Orders, to store info about orders placed by customers.
+# Creating the table, Orders, to store orders
 mycursor.execute("""
-CREATE TABLE Orders(
-    order_id PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS Orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    order_date DATE,
     FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
-    order_date DATE
 )
-                 """)
+""")
 
-#Creating the table, Order_Details, to store info about books included in each order placed by customers.
+# Creating the table, Order_Details, to store order details
 mycursor.execute("""
-CREATE TABLE Order_Details(
-    order_detailid PRIMARY KEY,
-    FOREIGN KEY (order_id) REFERENCES Orders(order_id)
+CREATE TABLE IF NOT EXISTS Order_Details (
+    order_detailid INT PRIMARY KEY,
+    order_id INT,
+    book_id INT,
+    quantity DOUBLE,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
     FOREIGN KEY (book_id) REFERENCES Books(book_id)
-    quantity DOUBLE
 )
-                 """)
+""")
+
+print("Database and tables created successfully.")
